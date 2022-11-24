@@ -6,6 +6,7 @@ Created on Tue May 31 10:50:44 2022
 """
 
 # First party imports
+import sys
 import importlib
 import logging
 from collections import namedtuple
@@ -54,9 +55,6 @@ class Dependencies:
 
     def missing(self):
         for module in self.modules:
-            if module.name == "-e .[test]":
-                continue
-
             if not module.installed:
                 logger.debug(f"Dependency {module} not available!")
                 continue
@@ -70,6 +68,7 @@ class Dependencies:
 
 
 def _check_installed(module_name):
+
     try:
         importlib.import_module(module_name)
     except Exception:
@@ -79,6 +78,7 @@ def _check_installed(module_name):
 
 
 def _check_version(module_name):
+
     try:
         version = importlib.metadata.version(module_name)
         version = version_to_tuple(version)

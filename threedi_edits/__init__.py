@@ -41,6 +41,7 @@ About version 1.0:
     
 """
 
+from . import utils  # noqa
 from .utils.logging import show_console_logging
 
 show_console_logging()
