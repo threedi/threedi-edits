@@ -17,15 +17,18 @@ from osgeo import ogr
 # Local imports
 from threedi_edits.gis.feature import Feature
 from threedi_edits.gis.fields import OGR_TYPES_INVERT, Fields
-from threedi_edits.threedi.constants.constants import Properties
 from threedi_edits.threedi.utils.exceptions import ThreediValueTypeError
 from threedi_edits.threedi.utils.exceptions import ThreediValueTypeWarning
 from threedi_edits.threedi.utils.exceptions import _HAPPY
 from threedi_edits.threedi.utils.exceptions import custom_formatwarning
 
+from threedi_edits.globals import SUPPORTED_THREEDI_VERSIONS
+from threedi_edits.threedi.constants import get_version
+
+V = get_version(SUPPORTED_THREEDI_VERSIONS[0])
 
 # Globals
-PROPERTIES = Properties()
+PROPERTIES = V.Properties()
 warnings.formatwarning = custom_formatwarning
 
 

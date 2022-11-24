@@ -4,17 +4,20 @@ Created on Tue May 31 10:50:44 2022
 
 @author: chris.kerklaan
 """
+
+# First party imports
 import importlib
 import logging
 from collections import namedtuple
+
+# Local imports
+from threedi_edits.globals import INSTALL_REQUIRES
 
 # Globals
 logger = logging.getLogger(__name__)
 Module = namedtuple(
     "package", "name installed_version installed minimum_required_version"
 )
-
-INSTALL_REQUIRES = ["scipy", "cached_property", "shapely==2.0a1", "threedigrid_builder"]
 
 
 class Dependencies:

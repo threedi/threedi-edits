@@ -24,9 +24,12 @@ from threedi_edits.threedi.grid import make_grid
 from threedi_edits.threedi.rastergroup import ThreediRasterGroup
 from threedi_edits.threedi.vectorgroup import ThreediVectorGroup
 from threedi_edits.utils.dependencies import DEPENDENCIES
-from threedi_edits.threedi.constants.constants import TABLES, raster_fields, TRANSLATE
 from threedi_edits.utils.project import Classes, Functions
+from threedi_edits.globals import SUPPORTED_THREEDI_VERSIONS
+from threedi_edits.threedi.constants import get_version
 
+# Globals
+V = get_version(SUPPORTED_THREEDI_VERSIONS[0])
 
 # structure
 classes = Classes(__name__, local_only=True)
@@ -39,7 +42,6 @@ logger = logging.getLogger(__name__)
 # Globals
 OGR_SQLITE_DRIVER = ogr.GetDriverByName("SQLite")
 OGR_MEM_DRIVER = ogr.GetDriverByName("Memory")
-SUPPORTED_VERSIONS = ["0209"]
 
 
 class ThreediEdits(ThreediVectorGroup):
@@ -161,10 +163,10 @@ class ThreediEdits(ThreediVectorGroup):
         """
 
         tables = self._tables()
-        for table in TABLES["all"]:
-            if table in TRANSLATE:
-                attribute = getattr(tables, TRANSLATE[table])
-                setattr(self, TRANSLATE[table], attribute)
+        for table in V.TABLES["all"]:
+            if table in V.TRANSLATE:
+                attribute = getattr(tables, V.TRANSLATE[table])
+                setattr(self, V.TRANSLATE[table], attribute)
 
         return tables
 
@@ -180,7 +182,7 @@ class ThreediEdits(ThreediVectorGroup):
 
         global_settings = self.ds.GetLayerByName("v2_global_settings")
         gs = next(iter(global_settings))
-        paths = {field: gs[field] for field in raster_fields if field in gs.keys()}
+        paths = {field: gs[field] for field in V.raster_fields if field in gs.keys()}
         infiltration_settings = self.ds.GetLayerByName("v2_simple_infiltration")
         infiltration_id = gs["simple_infiltration_settings_id"]
         if type(infiltration_id) == int:
@@ -231,7 +233,7 @@ class ThreediEdits(ThreediVectorGroup):
             return versioning[1]["version_num"]
         else:
             logger.info("Version not set!")
-            return SUPPORTED_VERSIONS[0]
+            return SUPPORTED_THREEDI_VERSIONS[0]
 
     @cached_property
     def extent(self):
@@ -284,13 +286,13 @@ class ThreediEdits(ThreediVectorGroup):
                 key: node_table[key][i] for key in node_table
             }
 
-        for table in TABLES["single"] + TABLES["start_end"]:
+        for table in V.TABLES["single"] + V.TABLES["start_end"]:
             model_table = self[table]
 
             add = model_table.table
             for i in range(len(self[table])):
 
-                if table in TABLES["single"]:
+                if table in V.TABLES["single"]:
                     node_table = new_dict[add["connection_node_id"][i]]
 
                     if data:
@@ -332,8 +334,10 @@ class ThreediEdits(ThreediVectorGroup):
         self.__dict__["rasters"] = value
 
     def supported(self, version):
-        if not version in SUPPORTED_VERSIONS:
-            raise NotImplementedError(f"Version {version} not implemented")
+        if not version in SUPPORTED_THREEDI_VERSIONS:
+            raise NotImplementedError(
+                f"Version {version} not implemented, please migrate."
+            )
 
     def nodes_height(self):
         """Samples all nodes using the dem."""
@@ -371,7 +375,7 @@ class ThreediEdits(ThreediVectorGroup):
         None.
 
         """
-        for table in TABLES["order"]:
+        for table in V.TABLES["order"]:
             if deletes:
                 if table not in deletes:
                     continue
@@ -389,7 +393,7 @@ class ThreediEdits(ThreediVectorGroup):
         """
 
         view = self.nodes_view[node_id]
-        deletes = {k: [] for k in TABLES["order"]}
+        deletes = {k: [] for k in V.TABLES["order"]}
         for delete_table in deletes:
             if delete_table in view:
                 if type(view[delete_table]) == dict:

@@ -41,12 +41,16 @@ import tempfile
 # Local imports
 from threedi_edits.gis.point import Point
 from threedi_edits.threedi.edits import ThreediEdits
-from threedi_edits.threedi.constants.templates import Templates
+from threedi_edits.globals import SUPPORTED_THREEDI_VERSIONS
+from threedi_edits.threedi.constants import get_version
+
+V = get_version(SUPPORTED_THREEDI_VERSIONS[0])
 
 
 # Globals
 # __file__ = "C:/Users/chris.kerklaan/Documents/Github/threedi-raster-edits/threedi_edits/tests/test_threedi_edits.py"
 
+Templates = V.Templates
 DATA = pathlib.Path(__file__).parent / "data" / "threedi_edits"
 DEM_PATH = DATA / "dem.tif"
 

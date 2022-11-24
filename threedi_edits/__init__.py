@@ -40,6 +40,7 @@ About version 1.0:
     
     
 """
+
 from .utils.logging import show_console_logging
 
 show_console_logging()
@@ -60,8 +61,6 @@ gdal.SetConfigOption("CPL_LOG", "NUl")
 ogr.UseExceptions()
 gdal.UseExceptions()
 
-# versioning
-__version__ = "1.0"
 
 # gis
 import shapely  # noqa
@@ -81,7 +80,6 @@ from .threedi.rastergroup import ThreediRasterGroup  # noqa
 from .threedi.rastergroup import retrieve_soil_conversion_table  # noqa
 from .threedi.rastergroup import retrieve_landuse_conversion_table  # noqa
 from .threedi.edits import ThreediEdits  # noqa
-from .threedi.constants.templates import Templates  # noqa
 
 # Logging
 from . import utils  # noqa
@@ -95,6 +93,12 @@ from .utils.project import Logger  # noqa
 
 # Examples
 from .examples import get_examples  # noqa
+
+# Globals
+from .globals import SUPPORTED_THREEDI_VERSIONS  # noqa
+from .globals import INSTALL_REQUIRES  # noqa
+from .globals import __version__  # noqa
+
 
 # structure
 files = Files(__file__)

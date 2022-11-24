@@ -4,9 +4,7 @@ Created on Wed Oct 14 16:32:51 2020
 
 @author: chris.kerklaan
 
-TODO:
-    1.Finish the templates,
-    1.Check types with empty sqlite
+Version 0209.
 
 """
 from osgeo import ogr

@@ -5,19 +5,25 @@ Created on Mon Feb 15 08:57:13 2021
 @author: chris.kerklaan
     
 """
+#
+
 # Third-party imports
 import logging
 from osgeo import ogr
 
 # Local imports
 from threedi_edits.gis.vector import Vector
-from threedi_edits.threedi.constants.constants import Properties
-from threedi_edits.threedi.constants.templates import ThreediTemplateTable
 from threedi_edits.gis.feature import Feature
 from threedi_edits.threedi.feature import ThreediFeature
 
+from threedi_edits.globals import SUPPORTED_THREEDI_VERSIONS
+from threedi_edits.threedi.constants import get_version
+
 # Globals
-PROPERTIES = Properties()
+V = get_version(SUPPORTED_THREEDI_VERSIONS[0])
+
+PROPERTIES = V.Properties()
+ThreediTemplateTable = V.ThreediTemplateTable
 logger = logging.getLogger(__name__)
 
 

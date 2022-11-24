@@ -23,16 +23,18 @@ from osgeo import osr
 
 # Local imports
 import threedi_edits as te
-
-from threedi_edits.threedi.constants.constants import TABLES, Properties, TRANSLATE
 from threedi_edits.gis.vectorgroup import VectorGroup
 from threedi_edits.gis.vector import Vector
 from threedi_edits.threedi.vector import ThreediVector
-
+from threedi_edits.globals import SUPPORTED_THREEDI_VERSIONS
+from threedi_edits.threedi.constants import get_version
 
 # Globals
 FILE_PATH = pathlib.Path(__file__)
-EMPTY_SQLITE_PATH = str(FILE_PATH.parent / "data" / "empty_klondike.sqlite")
+EMPTY_SQLITE_PATH = str(
+    FILE_PATH.parent / "data" / SUPPORTED_THREEDI_VERSIONS[0] / "empty_klondike.sqlite"
+)
+V = get_version(SUPPORTED_THREEDI_VERSIONS[0])
 
 # Drivers
 OGR_SQLITE_DRIVER = ogr.GetDriverByName("SQLite")
@@ -82,15 +84,15 @@ class ThreediVectorGroup(VectorGroup):
         return f"({self.instance}) 3Di model"
 
     def __iter__(self):
-        for table_name in TABLES["all"]:
+        for table_name in V.TABLES["all"]:
             if table_name in self.layers:
                 yield self._table(table_name)
 
     def _tables(self):
         tables = types.SimpleNamespace()
-        for table in TABLES["all"]:
-            if table in TRANSLATE:
-                setattr(tables, TRANSLATE[table], self._table(table))
+        for table in V.TABLES["all"]:
+            if table in V.TRANSLATE:
+                setattr(tables, V.TRANSLATE[table], self._table(table))
 
         return tables
 
@@ -119,7 +121,7 @@ class ThreediVectorGroup(VectorGroup):
             # Some layers are remove, so we are skipping some things.
             if table.name not in current_layers:
                 continue
-            if table.name in TABLES["skip"]:
+            if table.name in V.TABLES["skip"]:
                 continue
 
             table_output = output[table.name]
@@ -167,7 +169,7 @@ def create_output_model(path):
 def create_empty_model():
     """creates a ThreediModelBase from scratch"""
     group = VectorGroup.from_scratch(name="Threedi Model")
-    for name, threedi_property in Properties():
+    for name, threedi_property in V.Properties():
 
         # create vector, with the right geometry and fields
         if "the_geom" in threedi_property:
