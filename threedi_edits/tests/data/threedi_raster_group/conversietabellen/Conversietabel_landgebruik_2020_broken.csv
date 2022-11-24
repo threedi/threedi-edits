@@ -1,0 +1,36 @@
+﻿Code;Landuse;Friction;Permeability;Interception
+Landuse code - Integer;Landuse - String;Friction Manning;Ratio pervious/impervious;Maximum interception thickness
+-;-;[s/m1/3];-;[m]
+1-254;;0.01 - 0.2;0 - 1;0 - 0.025
+;;;;
+Integer;String;Double;Double;Double
+1;erf en tuinen;0.058;0.25;0.0025
+2;industrie;0.013;0.1;0.0025
+3;commerciële doeleinden;0.058;0.1;0.0025
+4;diensten;0.058;0.1;0.0025
+5;transportinfrastructuur;0.058;0;0.0025
+6;recreatie en sport;0.03;1;0.003
+7;landbouwgebieden en - infrastructuur;0.034;1;0.003
+8;overige bebouwde terreinen;0.058;0.1;0.0025
+9;overige onbebouwde terreinen;0.058;1;0.01
+10;groeves;0.058;1;0.0025
+11;luchthavens;0.013;0.1;0.0025
+12;bos;0.058;1;0.01
+13;akker;0.034;1;0.003
+14;grasland;0.03;1;0.003
+15;struikgewas;0.058;1;0.005
+16;braakliggend en duinen;0.058;1;0.01
+17;water;0.026;1;0
+18;moeras;0.058;1;0.01
+19;gebouwaanhorigheid;0.058;0.1;0.0025
+20;gebouw aan de grond;0.058;0.1;0.0025
+21;spoorbaan;0.03;0.5;0.0025
+22;gras;0.03;1;0.003
+23;verhard;0.013;0.1;0.0025
+24;gemengde vegetatie;0.058;1;0.005
+25;houtige vegetatie;0.058;1;0.005
+26;kruidachtige vegetatie;0.058;1;0.005
+27;onverhard en niet begroeid;0.03;1;0.0025
+28;wegbaan;0.013;0;0.0025
+29;wegaanhorigheid;0.058;0.1;0.0025
+30;watergang;0.026;1;0

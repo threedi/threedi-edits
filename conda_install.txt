@@ -1,0 +1,2 @@
+conda create -n test python=3.10 spyder gdal
+pip install threedi_edits-1.1-py3-none-any.whl

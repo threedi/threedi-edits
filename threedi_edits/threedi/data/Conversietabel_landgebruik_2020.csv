@@ -1,0 +1,36 @@
+Code;Landuse;Friction;Permeability;Interception;Crop_type
+Landuse code - Integer;Landuse - String;Friction Manning;Ratio pervious/impervious;Maximum interception thickness;Crop types for evaporation calculation
+-;-;[s/m1/3];-;[m];-
+1-254;;0.01 - 0.2;0 - 1;0 - 0.025;1-16
+Integer;String;Double;Double;Double;Integer
+;;;;;
+1;dak;0.058;0;0.0025;8
+2;zand;0.03;1;0.003;1
+3;half verhard;0.03;0.5;0.0025;8
+4;erf;0.03;0.25;0.003;1
+5;gesloten verharding;0.013;0;0.0025;8
+6;onverhard;0.03;1;0.0025;8
+7;open verharding;0.016;0.025;0.0025;8
+8;groenvoorziening;0.03;1;0.003;1
+9;naaldbos;0.058;1;0.01;12
+10;gras;0.03;1;0.003;1
+11;grasland;0.03;1;0.003;1
+12;struiken;0.058;1;0.005;13
+13;natuurterrein;0.058;1;0.01;13
+14;boomteelt;0.058;1;0.005;9
+15;duin;0.05;1;0.003;1
+16;heide;0.058;1;0.005;13
+17;bouwland;0.034;1;0.003;2
+18;houtwal;0.058;1;0.005;13
+19;loofbos;0.058;1;0.01;11
+20;rietland;0.058;1;0.005;13
+21;fruitteelt;0.058;1;0.005;9
+22;gemengd bos;0.058;1;0.01;11
+23;braakland;0.058;1;0.01;13
+26;moeras;0.058;1;0.01;13
+27;kwelder;0.058;1;0.01;13
+28;waterberm;0.03;1;0.003;1
+29;water;0.026;0;0;1
+30;overige;0.03;1;0.003;1
+254;water;0.026;0;0;1
+253;nodata - aanname = gras;0.03;1;0.003;1

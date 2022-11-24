@@ -1,0 +1,54 @@
+# Pyc/pyo/backup files.
+*.py[co]
+*~
+*.swp
+*.pyc
+*.bak
+*.gitignore.bak
+
+# Packages/buildout/pip/pipenv
+*.egg
+*.egg-info
+sdist
+pip-log.txt
+src
+bower_components/
+node_modules/
+.DS_Store
+doc/build/
+ansible/*.retry
+.venv
+bin/
+lib/
+pyvenv.cfg
+
+# Unit test / coverage reports
+.coverage
+.tox
+nosetests.xml
+htmlcov
+.codeintel
+coverage.xml
+.pytest_cache
+.benchmarks
+.github
+
+# Pycharm, visual studio
+.idea
+.vscode
+
+# Docker
+docker-compose.override.yml
+
+# Spyder project
+.spyproject 
+
+# Benchmarks
+.benchmarks
+
+# Cache
+cache.pickle
+threedi_edits/.coverage.DESKTOP-IGEQ70D.17604.248824
+threedi_edits/.coverage.DESKTOP-IGEQ70D.12164.984005
+threedi_edits/.coverage.DESKTOP-IGEQ70D.12164.431350
+dist/threedi_raster_edits-0.28.dev0-27092022-py3-none-any.whl

@@ -1,0 +1,5 @@
+Speed: 600 ms, features 3398.
+2. Load in wkb: 300 ms
+4. Put everything in shapely base features: 90 ms
+
+3. Put everthing in  _ogr format

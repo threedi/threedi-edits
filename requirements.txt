@@ -1,0 +1,5 @@
+-e .[test]
+scipy
+cached_property
+shapely
+threedigrid_builder

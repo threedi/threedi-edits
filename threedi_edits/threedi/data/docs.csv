@@ -1,0 +1,610 @@
+Table,attribute,type,mandatory,default,unit,comment,,
+v2_1d_boundary_conditions,,,,,,"Boundary condition for 1D connection nodes.
+Boundaries can only be placed on nodes connected to a single channel or pipe.",,
+,id,serial,*,,,Unique identifier,,
+,,integer,*,,"1: m above datum
+2: m/s
+3: m3/s","Boundary type.
+1: waterlevel boundary
+2: velocity boundary
+3: discharge boundary 
+5: Sommerfeld boundary (waterlevel slope). 
+
+For types 2, 3  and 5 the channel direction determines sign of the input value. If the boundary is placed on the channel endpoint, positive values mean for example water is being extracted from the model.",,
+,connection_node_id,integer,*,,,Unique connection node id.,,
+,timeseries,text,*,,"min,value
+ min,value","Format:
+ min,value
+ min,value
+Between time succesive lines values are interpolated. (note that during 1 timestep the values is still constant)
+- Leave no trailing spaces or empty rows at the end of your file.
+- Make sure there is no space between min,value
+- In case of multiple boundaries in 1 model: make sure they all have the same number of timeseries rows with exactly the same temporal interval.
+- In case of multiple boundaries in 1 model: also start- and end time of all timeseries must be the same.
+- In QGIS it is not posible to directly type enter/newline characters into a table. To enter this format into spatialite you must either use a text editor to compose your timeseries through the field calculator using '\n' to add a new line.
+",,
+v2_1d_lateral,,,,,,Lateral for 1D connection nodes,,
+,id,serial,*,,,Unique identifier,,
+,connection_node_id,integer,*,,,Unique connection node id.,,
+,timeseries,text,*,,"min,m3/s","Format:
+ min,value
+ min,value
+Between time succesive lines values are interpolated. (note that during 1 timestep the values is still constant)
+- Leave no trailing spaces or empty rows at the end of your file.
+- Make sure there is no space between min,value
+- In case of multiple laterals in 1 model: make sure they all have the same number of timeseries rows with exactly the same temporal interval.
+- In case of multiple laterals in 1 model: also start- and end time of all timeseries must be the same.
+- In QGIS it is not posible to directly type enter/newline characters into a table. To enter this format into spatialite you must either use a text editor to compose your timeseries through the field calculator using '\n' to add a new line.
+",,
+v2_2d_boundary_conditions,,,,,,Boundary condition for 2D model edge (must be on edge of DEM file),,
+,id,serial,*,,-,Unique identifier,,
+,boundary_type,integer,*,,"1: m above datum
+2: m/s
+3: m3/s
+5: -","1: waterlevel boundary
+2: velocity boundary
+3: discharge boundary (discharge is per boundary cell)
+5: Sommerfeld boundary (waterlevel slope)
+
+schematisation requirements: 
+- the boundary linestring must be placed on the edge of the DEM (outer calculation cells)
+- the boundary linestring must intersect at least two calculation cells
+- the complete boundary Linestring must be on on active edge (read: on data pixels). If (a part of) the boundary is on nodata pixels then the boundary is ignored
+- the boundary linestring may be slightly skewed (maximum 6 pixels skewed). Thus, it must be either horizontal or vertical.
+- the boundary also looks at the cross section area at the outside of the model (so the outer pixels at the dem) whether flow is possible",,
+,display_name,text,*,,,"Name field, no constraints",,
+,timeseries,text,*,,"min,value
+min,value","Format:
+ min,value
+ min,value
+Between time succesive lines values are interpolated. (note that during 1 timestep the values is still constant)
+- Leave no trailing spaces or empty rows at the end of your file.
+- Make sure there is no space between min,value
+- In case of multiple boundaries in 1 model: make sure they all have the same number of timeseries rows with exactly the same temporal interval.
+- In case of multiple boundaries in 1 model: also start- and end time of all timeseries must be the same.
+- In QGIS it is not posible to directly type enter/newline characters into a table. To enter this format into spatialite you must either use a text editor to compose your timeseries through the field calculator using '\n' to add a new line.",,
+v2_2d_lateral,,,,,,Lateral discharge for location on 2D,,
+,id,serial,*,,,Unique identifier,,
+,discharge,double,*,,"min, m3/s","""Format:
+ min,value
+ min,value
+Between time succesive lines values are interpolated. (note that during 1 timestep the values is still constant)
+- Leave no trailing spaces or empty rows at the end of your file.
+- Make sure there is no space between min,value
+- In case of multiple laterals in 1 model: make sure they all have the same number of timeseries rows with exactly the same temporal interval.
+- In case of multiple laterals in 1 model: also start- and end time of all timeseries must be the same.
+- In QGIS it is not posible to directly type enter/newline characters into a table. To enter this format into spatialite you must either use a text editor to compose your timeseries through the field calculator using '\n' to add a new line.
+- The horizontal lines should be defined from west to east
+- The vertical lines should be defined from south to north",,
+,type,integer,*,,,1: surface,,
+v2_aggregation_settings,,,,,,Settings for aggretation that are found in the flow_aggregate.nc,,
+,id,,,,,Unique identifier,,
+,aggregation_in_space,boolean (in sqlite integer),*,FALSE,-,not yet implemented.,,
+,aggregation_method,char(100),*,,-,"Method of aggretation, choose from: avg, min, max, cum, med, cum_negative, cum_positive, current (use 'current' only for volume and interception)",,
+,flow_variable,char(100),,,-,"The name of output variable that is aggregated.
+Possible flow variables: 
+discharge
+flow_velocity
+pump_discharge
+rain
+waterlevel
+wet_cross-section
+wet_surface
+lateral_discharge
+volume
+simple_infiltration
+leakage
+interception",,
+,global_settings,integer,,,,"v2_global_settings scenario id. 
+ If not set, the aggregation rule is applied to all models in global_settings. if set, the aggregation rule is only applied to that specific model.",,
+,timestep,integer,*,,s,Timestep size for aggregation.,,
+,var_name,char(100),*,,-,Mandatory Name field for flow variable name.,,
+v2_channel,,,,,,"Channel lines between connection nodes. 
+ All channels must have at least one cross_section_location.",,
+,id,serial,*,,,Unique identifier,,
+,calculation_type,integer,*,,,"100 = embedded channel
+101 = stand-alone channel
+102 = connected channel
+105 = double connected channel
+Embedded or connected can only be used where a DEM is present. Any start-, end- or calculation node along a channel with these types may not lay outside the DEM.",,
+,code,text,*,,,"Name field, no constraints",,
+,connection_node_end_id,integer,*,,,End node for channel line. Must be present in v2_connection_nodes and the channel geometry endpoint must be snapped on the given connection node.,,
+,connection_node_start_id,integer,*,,,Start node for channel line. Must be present in v2_connection_nodes and the channel geometry startpoint must be snapped on the given connection node.,,
+,display_name,text,*,,,"Name field, no constraints",,
+,dist_calc_points,double,*,,m,Distance between calculation points on linesegments.,,
+,zoom_category,integer,,,,Visibility in live site. 0 is lowest for smallest level (i.e. ditch) and 5 for highest (rivers),,
+v2_connection_nodes,,,,,,"Location and ID of nodes between channels, pipes and structures.
+Make sure that:
+i) When removing a node or changing its ID, make sure the 
+node is not referred to in any of the other tables,
+ii) When moving a node, make sure to also move any channels 
+and culverts that are snapped to the node, 
+iii) make sure no node is left without any connection, and
+iv) make sure that every node is connected to either a channel or is 
+used as a manhole (otherwise the calculation type is unknown).",,
+,id,serial,*,,,Unique identifier,,
+,initial_waterlevel,double,,,m above datum (NL: NAP),"Initial water level at connection node.
+ Initial waterlevel is interpolated across channel calculation nodes.",,
+,storage_area,,,,m2,"Storage area, e.g. for manholes in sewerage calculations.
+If a manhole is present on a connection node the storage area must be larger than zero. Note that the manhole's shape, width, and length are for administration only and do not influence the storage area used during simulation.
+Storage area can also be added to a connection node without the use of a manhole.
+Nodes that are not connected to channels (for instance when between 2 culverts) require a storage area larger than zero, for others storage area is derived from the channel cross section, reference level and calculation distance.",,
+v2_cross_section_definition,,,,,,Table of cross-section definitions,,
+,id,serial,*,,-,Unique identifier,,
+,code,text,*,,,"Name field, no constraints",,
+,height,text,**,,m,"For tabulated fill in space-separated heights of profile.
+ All height values must be larger than zero, except for the first value
+ **Mandatory for types 3, 5 & 6.",,
+,shape,integer,*,,,"1 = rectangle; specify width and height (profile/upper side is not automatically closed)
+2 = circle; specify width (profile/upper side is automatically closed)
+3 = egg; specify only 1 width. From this 3Di creates an egg-shaped profile with heigth = 1.5*width
+5 = tabulated rectangle; specify space-seperated width and height intervals. Between intervals the profile is defined straight. Can be closed by stating width 0 at heighest heigth
+6 = tabulated trapezium; specify space-sperated width and height intervals. Between intervals the profile is interpolated. Can be closed by stating width 0 at heighest heigth",,
+,width,text,*,,m,For tabulated fill in space-separated widths of profile. Fill in diameter for circle.,,
+v2_cross_section_location,,,,,,"Location of cross-section for channels. 
+ All cross-section locations must be snapped to a channel vertex. 
+ May not be placed on or within 1 cm within start- or endnode.",,
+,id,serial,*,,,Unique identifier,,
+,bank_level,double,**,,m above datum (NL: NAP),"For connected channels only. Reference level for exchange between 1D and 2D.
+ ** Mandatory when channel type is 102.",,
+,channel_id,integer,*,,,"Reference to v2_channel id. 
+ Channel id must match the channel on which the location lies.",,
+,code,text,*,,,"Name field, no constraints",,
+,definition_id,integer,*,,,"Reference to v2_cross_section_definition id.
+ Must be present in v2_cross-section_definition table.",,
+,friction_type,integer,*,,,"1 = Chezy !not yet implemented
+2 = Manning",,
+,friction_value,double,*,,"1: m1/2/s
+2: s/m1/3",Friction or roughness value for profile,,
+,reference_level,double,*,,m above datum (NL: NAP),Reference level or bottom level for profile.,,
+v2_culvert,,,,,,"Table of culverts, connection between connection nodes",,
+,id,serial,*,,,Unique identifier,,
+,calculation_type,integer,*,101,,"100 = embedded channel
+101 = stand-alone channel
+102 = connected channel
+105 = double connected channel
+Embedded or connected can only be used where a DEM is present. Any start-, end- or calculation node along a channel with these types may not lay outside the DEM.",,
+,code,text,*,,,"Name field, no constraints",,
+,connection_node_end_id,integer,*,,,End node for culvert line. Must be present in v2_connection_nodes and the culvert geometry endpoint must be snappen on the given connection node.,,
+,connection_node_start_id,integer,*,,,Start node for culvert line. Must be present in v2_connection_nodes and the culvert geometry startpoint must be snappen on the given connection node.,,
+,cross_section_definition_id,integer,*,,,"Reference to v2_cross_section_definition id.
+ Must be present in v2_cross-section_definition table.",,
+,discharge_coefficient_negative,double,,,,Discharge coefficient for negative flow (from end to start node). Can be set to 0 when closed. This feature is enabled since the release of 26th of November 2018.,,
+,discharge_coefficient_positive,double,,,,Discharge coefficient for positive flow (from start to end node). Can be set to 0 when closed. This feature is enabled since the release of 26th of November 2018.,,
+,display_name,text,*,,,"Name field, no constraints",,
+,dist_calc_points,double,*,,m,Distance between calculation points on linesegments.,,
+,friction_type,integer,*,,,"Friction type
+ 1 = Chezy (not yet implemented)
+ 2 = Manning",,
+,friction_value,double,*,,"1: m1/2/s
+ 2: s/m1/3",Friction or roughness value for profile,,
+,invert_level_end_point,double,*,,m above datum (NL: NAP),"Invert level at culvert endpoint. 
+Must be equal or above ajoining manhole or channel bottom/reference level.",,
+,invert_level_start_point,double,*,,m above datum (NL: NAP),"Invert level at culvert startpoint. 
+ Must be equal or above ajoining manhole or channel bottom/reference level.",,
+,zoom_category,integer,,,,Visibility in live site. 0 is lowest for smallest level (i.e. ditch) and 5 for highest (rivers),,
+v2_global_settings,,,,,,Global settings,,
+,id,serial,*,,,Unique identifier,,
+,advection_1d,integer,*,0/1,,"Use advection in 1D, other schemes 2-7 are in experimental phase",,
+,advection_2d,integer,*,0/1,,Use advection in 2D.,,"Voor stedelijk gebied kon je de inloop modelleren met de impervious surfaces. Voor een bepaald type oppervlak gebuikte 3Di dan een voorgedefinieerd set aan inflow parameters. Om meer flexibiliteit te bieden is het nu mogelijk je eigen set aan surface parameters op te geven die de inloop via een oppervlak karakteriseren. Daarvoor moet je een v2_surface_parameters rij vullen en deze aan je v2_surface instance koppelen. De koppeling aan bepaalde connection nodes gebeurd op dezelfde manier als bij de impervious surfaces. Alleen hebben de v2_surfaces hun eigen mapping table: v2_surface_map. Om 3Di te laten weten dat je v2_surface objecten wilt gebruiken, hebben we de v2_global_settings kolom use_0d_inflow veranderd. Als je hem op 0 zet, is 0D inflow uitgeschakeld. Een 1 geeft aan dat je de v2_impervious_surfaces wilt gebruiken, en met een 2 laat je weten de we de v2_surfaces moet pakken."
+,control_group_id,integer,,,,Reference to id that contains control settings for this scenario.,,
+,dem_file,text,*,raster/yourfile.tif,m above datum (NL: NAP),Relative path to dem file (.tif),,
+,dem_obstacle_detection,boolean,*,,-,Automatically detect obstacles based on DEM-file. Works only in combination with dem_obstacle_height (has no relation with v2_obstacle),,
+,dem_obstacle_height,double,**,,m,"Relative height (above lowest pixel of calc cell) for obstacle detection.
+ ** Mandatory when using dem obstacle detection.",,
+,dist_calc_points,double,*,,m,Global distance between calculation points for line elements.,,
+,embedded_cutoff_threshold,double,,0.05,factor [0 - 1],"Relative length of cell size. When embedded channel intersects 2D grid size over length shorter than the cellsize * cutoff threshold, the embedded channel skips this 2D cell. Usefull for preventing very short embedded channel segments (which slow down your model).",,
+,epsg_code,integer,*,,m,Define map projection for study area. Must match raster projection.,,
+,flooding_threshold,double,*,>=0.0,m,Water depth threshold for flow between 2D cells. Depth relative to lowest bathymetry pixel at the edge between two 2D cell.,,
+,frict_avg,integer,*,0,-,The roughness coefficient will be averaged within one cell. Can only be 0 or 1.,,
+,frict_coef,double,*,,"1:[m1/2/s], 2:[s/m1/3]",Constant friction coefficient for 2D.,,
+,frict_coef_file,text,,raster/yourfile.tif,"1:[m1/2/s], 2:[s/m1/3]",Relative path to friction file (.tif),,
+,frict_type,integer,,,,"1: Chezy for 2D
+ 2: Manning for 2D",,
+,grid_space,double,*,,m,"Size of smallest grid cell in quadtree, k=1.
+Must be an even multitude of the raster pixel size.",,
+,groundwater_settings_id,integer,,,,Reference to id that contains groundwater settings for this scenario.,,
+,initial_groundwater_level,double,,,m above datum (NL: NAP),Initial groundwater level ,,
+,initial_groundwater_level_file,text,,raster/yourfile.tif,m above datum (NL: NAP),Relative path to initial groundwater level file (.tif),,
+,initial_groundwater_level_type,integer,**,,,"0=max, 1=min, 2=avg
+ **Mandatory when using initial water level file.",,
+,initial_waterlevel,double,*,,m above datum (NL: NAP),Global initial water level.,,
+,initial_waterlevel_file,text,,raster/yourfile.tif,m above datum (NL: NAP),Relative path to initial water level file (.tif),,
+,interflow_settings_id,integer,,,,Reference to id that contains interflow settings for this scenario.,,
+,interception_global (or max_interception),double,,,m,Global value for interception.,,
+,interception_file (or max_interception_file),text,,raster/yourfile.tif,m,Relative path to interception file (.tif),,
+,kmax,integer,*,,,"Maximum multitude of smallest grid size in quadtree starting from grid_space at k=1.
+ Grid size increases according to 2^(k-1) * grid_space.",,
+,manhole_storage_area,double,**,,m2,"Default manhole storage area. This is the surface area that each manhole is given when water reaches above the surface level.
+ **Mandatory when using only 1d flow (no dem) manhole area must be larger than 0 (and an INTEGER)
+ Must be NULL when using only 2d.",,
+,max_angle_1d_advection,double,,,degrees [0-90],Maximum angle at which advection is considered.,,
+,max_infiltration_capacity_file,,,,,"Is depricated in the global settings table, should be defined in the v2_simple_infiltration table. Is/Will be removed with the release of October 2018",,
+,maximum_sim_time_step,double,**,,s,"Maximum timestep during simulation.
+ ** Mandatory when using timestep plus.",,
+,minimum_sim_time_step,double,,0.01 sec,s,"Minimum timestep during smulation, but keep it small for stability reasons. ",,
+,name,text,*,v2,,"Names must be unique globally. 
+ Do not use spaces, capitals, dahses (underscore is allowed)
+ Keep names shorter than 10 characters.
+ Don't use same name as sqlite name.",,
+,nr_timesteps,integer,*,,,"Maximum nr of timesteps.
+ This value is not used in the web portal.",,
+,numerical_settings_id,integer,,,,Reference to id that contains numerical settings for this scenario.,,
+,output_time_step,double,*,,s,"Timestep written in output file
+ must be a factor of sime_time_step",,
+,sim_time_step,double,*,,s,Simulation time step,,
+,simple_infiltration_settings_id,integer,,,,Reference to id that contains settings for simple infiltration for this scenario.,,
+,start_date,date,*,,,Format: 2017-01-01,,
+,start_time,"timestamp
+ with time zone",*,,,Starttime of simulation. Format: 00:00:00 (LM: volgens mij mag dit format niet en moet het zoiets zijn: 2014-01-01 00:00:00) ,,
+,table_step_size,double,*,,m,"User-defined table stepsize/increment (m).
+ Use 0.05 for detailed simulation or larger stepsize to speed up exploring model schematisation.",,
+,table_step_size_1d,double,,table_step_size,m,User-defined table stepsize/increment (m) for 1d cross-sections and volumes.  default value = table_step_size,,
+,table_step_size_volume_2d,double,,table_step_size,m,User-defined table stepsize/increment (m) for defining 2D volumes. Can increase speed when this is set larger than  table_step_size. default value = table_step_size,,
+,timestep_plus,boolean,*,,-,Allow switching to larger timestep when simulation is steady.,,
+,use_0d_inflow,integer,*,,,"Include 0D inflow (NWRW/impervious surfaces) in simulation.
+0  do not use 0d inflow
+1  use v2_impervious_surface
+2  use v2_surface",,
+,use_1d_flow,boolean,*,,,"Include 1D flow in simulation.
+ When using only 1D flow, manhole_storage_area must be larger than zero.",,
+,use_2d_flow,boolean,*,,,"Include 2D flow in simulation.
+ When using only 2D flow, set manhole_storage_area to NULL.",,
+,use_2d_rain,boolean,*,,,Use rainfall via 2D surface for this scenario,,
+,water_level_ini_type,integer,**,,,"0=max, 1=min, 2=avg
+ **Mandatory when using initial water level file.",,
+,wind_shielding_file,text,,,,IS NOT IMPLEMENTED,,
+v2_groundwater,,,,,,do not use in combination with simple_infiltration,,
+,id,serial,*,,,Unique identifier,,
+,display_name,text,*,,,"Name field, no constraints",,
+,equilibrium_infiltration_rate,double,*,,mm/day,Setting for Horton-based infiltration; This is the equilibrium infiltration rate,,
+,equilibrium_infiltration_rate_file,text,,raster/yourfile.tif,mm/day,Relative path to your file (.tif),,
+,equilibrium_infiltration_rate_type,integer,**,,,"0=max, 1=min, 2=avg
+ **Mandatory when using equilibrium infiltration file.",,
+,groundwater_hydro_connectivity,double,*,,m/day,Darcy coefficient,,
+,groundwater_hydro_connectivity_file,text,,raster/yourfile.tif,m/day,Relative path to your file (.tif),,
+,groundwater_hydro_connectivity_type,integer,**,,-,"0=max, 1=min, 2=avg  **Mandatory when using groundwater_hydro_connectivity_file",,
+,groundwater_impervious_layer_level,double,*,,m tov NAP,"level of impervious layer, bottom of groundwater layer",,
+,groundwater_impervious_layer_level_file,text,,raster/yourfile.tif,m tov NAP,Relative path to your file (.tif),,
+,groundwater_impervious_layer_level_type,integer,**,,,"0=max, 1=min, 2=avg
+ **Mandatory when using groundwater_impervious_layer_level_file.",,
+,infiltration_decay_period,double,*,,days,Setting for Horton-based infiltration; determines the period for which the infiltration decays to an equilibrium,,
+,infiltration_decay_period_file,text,,raster/yourfile.tif,days,Relative path to your file (.tif),,
+,infiltration_decay_period_type,integer,**,,,"0=max, 1=min, 2=avg
+ **Mandatory when using infiltration_decay_period _file.",,
+,initial_infiltration_rate,double,*,,mm/day,Setting for Horton-based infiltration; It is the initial infiltration rate,,
+,initial_infiltration_rate_file,text,,raster/yourfile.tif,mm/day,Relative path to your file (.tif),,
+,initial_infiltration_rate_type,integer,**,,,"0=max, 1=min, 2=avg
+ **Mandatory when using initial infiltration file.",,
+,leakage,double,*,,mm/d,"positive is adding water to the domain, negative is extracting water from the domain.",,
+,leakage_file,text,,raster/yourfile.tif,mm/d,"positive is adding water to the domain, negative is extracting water from the domain.",,
+,phreatic_storage_capacity,double,*,>0 and <1,-,"This is the effective porosity in the groundwater layer, as a fraction between 0 and 1",,
+,phreatic_storage_capacity_file,text,,raster/yourfile.tif,-,Relative path to your file (.tif),,
+,phreatic_storage_capacity_type,integer,**,,-,"0=max, 1=min, 2=avg
+ **Mandatory when using phreatic_storage_capacity_file.",,
+v2_grid_refinement,,,,,,Lines that determine local 2D calculation grid refinement.,,
+,id,serial,*,,,Unique identifier,,
+,display_name,text,*,,,"Name field, no constraints",,
+,refinement_level,integer,*,,,Local refinement level. Starting from 1. Values above kmax (v2_global_settings) are ignored.,,
+v2_grid_refinement_area,,,,,,Lines that determine local 2D calculation grid refinement.,,
+,id,serial,*,,,Unique identifier,,
+,display_name,text,*,,,"Name field, no constraints",,
+,refinement_level,integer,*,,,Local refinement level. Starting from 1. Values above kmax (v2_global_settings) are ignored.,,
+v2_impervious_surface,,,,,,Definition of 0D-surfaces.,,
+,id,serial,*,,-,Unique identifier,,
+,area,double precision,*,,,Cannot be left blank. A value of 0 is allowed.,,
+,code,text,*,,-,"Code field, no constraints",,
+,display_name,text,*,,-,"Name field, no constraints",,
+,dry_weather_flow,double,,,L/day per inhabitant,Dry weather flow per inhabitant.,,
+,nr_of_inhabitants,double,,,-,Number of inhabitant used for dry wheather flow.,,
+,surface_class,text,*,,-,"gesloten verharding -- impervious paving
+open verharding       -- pervious paving
+half verhard               -- semi-pervious paving
+onverhard                  -- unpaved
+pand                         -- building",,
+,surface_inclination,text,*,,-,"vlak              -- level
+hellend        -- inclined
+uitgestrekt  -- elongated",,
+,zoom_category,integer,,,-,Visibility in live site. 0 is lowest for smallest level (i.e. ditch) and 5 for highest (rivers),,
+v2_impervious_surface_map,,,,,,Table that linkes v2_impervious_surfaces to connection node ID's.,,
+,id,serial,*,,-,Unique identifier,,
+,connection_node_id,integer,*,,-,ID of connection node,,
+,impervious_surface_id,integer,*,,-,ID of impervious surfce feature,,
+,percentage,integer,*,,%,Percentage of impervious surface area places on connection node,,
+v2_interflow,,,,,,,,
+,id,serial,*,,-,Unique identifier,,
+,display_name,text,*,,-,"Name field, no constraints",,
+,hydraulic_conductivity,double,**,,m/day,"Global hydraulic conductivity (Darcy)
+ **When interflow_type > 0 then hydraulic_conductivity OR hydraulic_conductivity_file is mandatory",,
+,hydraulic_conductivity_file,text,,raster/yourfile.tif,m/day,"Relative path to hydraulic conductivity path (.tif)
+ **When interflow_type > 0 then hydraulic_conductivity OR hydraulic_conductivity_file is mandatory",,
+,impervious_layer_elevation,double,**,> 0,m,"When using interflow: Depth of interflow layer defined below lowest pixel (so always positive). Imaginary bottom of interflow layer. 
+ For interflow types 1 and 2 it is ignored for the volume in the interflow layer (but still it must be filled in when using interflow). The volume in these types is determined by the porosity and the porosity layer thickness. 
+ For interflow types 3 and 4 it is used to determine the volume in the interflow layer. 
+ In all types the waterlevel in the interflow layer starts at this level. It does not influence flow.
+ ** Mandatory when using interflow",,
+,interflow_type,integer,"*
+**",0,,"Include interflow in simulation.
+ 0: No Interflow
+ 1: define 1 porosity value for model. This porsity will be rescaled per pixel (to lowest pixel per cell), so (interflow) volume is the same for each pixel within 1 cell --> define porosity, hydraulic_conductivity, porosity_layer_thickness and impervious_layer_elevation (can be used in combination with groundwater)
+ 2: define 1 porosity value for model. This porsity will be rescaled per pixel (to lowest pixel whole model), so (interflow) volume is the same for each pixel in whole model --> define porosity, hydraulic_conductivity, porosity_layer_thickness and impervious_layer_elevation (cannot be used in combination with groundwater)
+ 3: define 1 porosity value for model. This porsity will not be rescaled, but each pixel in the model has the same porosity. The (interflow) volume for each pixel depends on the impervious_layer_elevation, which is below lowest pixel of cell --> define porosity, hydraulic_conductivity and impervious_layer_elevation (can be used in combination with groundwater)
+ 4: define 1 porosity value for model. This porsity will not be rescaled, but each pixel in the model has the same porosity. The (interflow) volume for each pixel depends on the impervious_layer_elevation, which is below lowest pixel of whole model --> define porosity, hydraulic_conductivity and impervious_layer_elevation (cannot be used in combination with groundwater)
+
+* NOT NULL
+** do not use interflow in combination with limiter_slope_crossectional_area_2d >0 AND/OR limiter_slope_friction_2d>0",,
+,porosity,double,**,,,"Porosity (between 0 and 1) of interflow layer.
+ ** Mandatory when using interflow",,
+,porosity_file,text,,raster/yourfile.tif,-,Relative path to porosity file (.tif),,
+,porosity_layer_thickness,double,**,> 0,m,"Thickness of porosity layer relative to DEM.
+ **Mandatory for interflow_type 1 and 2.",,
+v2_levee,,,,,,Line with fixed crest level that overides DEM- values at calculation cell borders.,,
+,id,serial,*,,-,Unique identifier,,
+,crest_level,double,*,,m above datum (NL: NAP),Crest level of levee segment.,,
+,material,integer,**,,-,"** Mandatory when you want to use a levee breach during your calculation 
+Material used for breach growth.
+ 1: sand
+ 2: clay",,
+,max_breach_depth,double,**,,m below levee crest_level,"** Mandatory when you want to use a levee breach during your calculation 
+Maximum breach depth relative to crest level (thus a positive value must be filled in).",,
+v2_manhole,,,,,,Sewerage manhole,,
+,id,serial,*,,-,Unique identifier,,
+,bottom_level,double,*,,m above datum (NL: NAP),Manhole bottom level.,,
+,calculation_type,integer,*,,-,"Manhole calculation type for 1D-2D connection.
+ 0: embedded
+ 1: isolated
+ 2: connected",,
+,code,text,*,,-,"Name field, no constraints",,
+,connection_node_id,integer,*,,-,ID of connection node on which manhole is placed.,,
+,display_name,text,*,,-,"Name field, no constraints",,
+,drain_level,double,**,,m above datum (NL: NAP),"Manhole drain level (**for connected manholes). If there is a connected manhole without drain level, 3Di will take the top of the pipe from the connection pipes as drain level.",,
+,length,double,**,,m,"Manhole length. This value is for administrative purposes only and has no effect on the storage area of the connection node.
+ **Mandatory when shape = 02",,
+,manhole_indicator,integer,*,,-," 0: inspection (inspectieput)
+ 1: outlet
+ 2: pump",,
+,shape,text,*,,-,"Manhole shape. This value is for administrative purposes only and has no effect on the storage area of the connection node. To add storage to a connection node, adjust the 'storage_area' in the v2_connection_nodes table.
+00: square
+01: round
+02: rectangle ",,
+,surface_level,double,,,m above datum (NL: NAP),Manhole surface level.,,
+,width,double,*,,m,Manhole width or diameter. This value is for administrative purposes only and has no effect on the storage area of the connection node.,,
+,zoom_category,integer,*,,-,Visibility in live site. 0 is lowest for smallest level (i.e. ditch) and 5 for highest (rivers),,
+v2_numerical_settings,,,,,,Advanced numerical settings,,
+,id,serial,*,,-,Unique identifier,,
+,cfl_strictness_factor_1d,double,,1,-,Strictness of CFL condition for 1D.,,"ook mogelijk: 1=Carlson implicit, 2=Silecki explicit. Niet getest--> niet gebruiken"
+,cfl_strictness_factor_2d,double,,1,-,Strictness of CFL condition for 2D.,,
+,convergence_cg,double,,0.000000001,,"For numerical computation several tresholds are needed in the code, to avoid deficiencies due to a limited numerical accuracy. Generally this is to keep the behaviour consistent.",,
+,convergence_eps,double,*,0.00001,,Minimal residual for convergence of newton iteration.,,
+,flow_direction_threshold,double,,0.000001,m/s,"For numerical computation several tresholds are needed in the code, to avoid deficiencies due to a limited numerical accuracy. Generally this is to keep the behaviour consistent.",,
+,frict_shallow_water_correction,integer,,0,-,"In case the friction assumptions based on the dominant friction balance gives a structurally underestimation of the friction, one can switch this setting on. 
+ 0 is off, 1 is maximum between averaged friction and divided channel based friction, 2 is always linearized, 3 linearizes the depth based on a weighed averaged.  In this case the maximum depth of a thin layer needs to be defined. Do not use in combination with interflow",,
+,general_numerical_threshold,double,,0.00000001,,"For numerical computation several tresholds are needed in the code, to avoid deficiencies due to a limited numerical accuracy. Generally this is to keep the behaviour consistent.",,
+,integration_method,integer,*,0,,Time integration method: 0=Euler implicit,,
+,limiter_grad_1d,integer,,1,,The limiter on the water level gradient allows the model to deal with unrealistically steep gradients.,,
+,limiter_grad_2d,integer,,0,-,"The limiter on the water level gradient allows the model to deal with unrealistically steep gradients. When field is left empty, it is switched on!!!",,
+,limiter_slope_crossectional_area_2d,integer,,0,-,"This limiter starts working in case the depth based on the downstream water level is zero and may be useful in sloping areas.
+ 0 is off, and 1 is a limiter which ends in a a higher order scheme, but is sensitive too instabilities, 2, treats the cross-sections as an upwind method volume/surface area under the assumption that the flow acts like a thin layer,  3 makes a combination of the traditional method in combination with the  thin layer apporach. In this case the maximum depth of a thin layer needs to be defined.
+ Do not use in combination with interflow",,
+,limiter_slope_friction_2d,integer,,0,-,"This limiter starts working in case the depth based on the downstream water level is zero and may be useful in sloping areas.  0 is off, and 1 is on. 
+This limiter is obliged in combination with limiter_slope_crossectional_area_2d>0.. l Do not use in combination with interflow",,
+,max_degree,integer,*,see comment,,"Setting for matrix solver. Values below are adviced for different model types
+700 for 1D flow
+7 for 1D and 2D flow
+5 for surface 2D flow only
+7 for surface and groundwater flow
+70 for 1D, 2D surface and groundwater flow or higher. Play around with this value in case of groundwater, can speed up your model significantly",,
+,max_nonlin_iterations,integer,*,20,,Maximum number of nonlinear iterations in single time step.,,
+,minimum_friction_velocity,double,,0.05,m/s,"For numerical computation several tresholds are needed in the code, to avoid deficiencies due to a limited numerical accuracy. Generally this is to keep the behaviour consistent.",,
+,minimum_surface_area,double,,0.00000001,m2,"For numerical computation several tresholds are needed in the code, to avoid deficiencies due to a limited numerical accuracy. Generally this is to keep the behaviour consistent.",,
+,precon_cg,integer,,1,-,"Use preconditioner for matrix solver. Increases simulation speed in most cases, Set to 0 or 1 (default).",,
+,preissmann_slot,double,,0,m2,"A conceptual vertical and narrow slot providing a conceptual free surface condition for the flow when the water level is above the top of a closed conduit. Often used to guarentee stability, in 3Di unnessary unless used for presurized pipe flow. Works only for circular profiles.",,
+,pump_implicit_ratio,double,,1,,Determines whether pump discharge is always maximum capacity (0) or discharge is limited to available inflow (1). The latter ensures a smooth discharge. Value between 0 and 1.,,
+,thin_water_layer_definition,double,**,0.05,m,** mandatory when using friction shallow water correction option 3 or limiter_slope_crossectional_area_2d on option 3,,
+,use_of_cg,integer,*,20,,"Number of iteration of conjugate gradient method, before swtiching to another method",,
+,use_of_nested_newton,integer,*,0/1,,1 for 1D calculation with closed profiles to handle non-linearity in volume-waterlevel relation. When using 0 nested newton is switch off by default but will be used when calculations become non-linear. For sewerage systems 1 is advised.,,
+v2_obstacle,,,,,,Line with fixed crest level that overides DEM- values at calculation cell borders.,,
+,id,serial,*,,-,Unique identifier,,
+,crest_level,double,*,,m above datum (NL: NAP),Crest level of obstacle segment,,
+v2_orifice,,,,,,Structure that can be used for spillways or bridges,,
+,id,serial,*,,-,Unique identifier,,
+,code,text,*,,-,"Name field, no constraints",,
+,connection_node_start_id,integer,*,,-,"Start node for orifice.
+ Must be present in v2_connection_nodes",,
+,connection_node_end_id,integer,*,,-,"End node for orifice.
+ Must be present in v2_connection_nodes",,
+,crest_level,double,*,,m above datum (NL: NAP),"Crest or bottom level. 
+ Must be equal or above ajoining manhole or channel bottom/reference level.",,
+,crest_type,integer,*,,-,"Type of weir formulation.
+ 3: broad crested
+ 4: short crested",,
+,cross_section_definition_id,integer,*,,-,ID of cross section definition in v2_cross_section_definition,,
+,discharge_coefficient_negative,double,*,1,-,Discharge coefficient for negative flow (from end to start node). Can be set to 0 when closed.,,
+,discharge_coefficient_positive,double,*,1,-,Discharge coefficient for positive flow (from start to end node). Can be set to 0 when closed.,,
+,display_name,text,*,,-,"Name field, no constraints",,
+,friction_type,integer,*,,,"Friction Type.
+ 1: Chezy (not yet implemented)
+ 2: Manning",,
+,friction_value,double,*,,"1:[m1/2/s], 2:[s/m1/3]",Friction or roughness value for profile,,
+,sewerage,boolean,,,-,For internal book keeping. Can be used for statistics in QGIS plugin.,,
+,zoom_category,integer,*,,,Visibility in live site. 0 is lowest for smallest level (i.e. ditch) and 5 for highest (rivers),,
+v2_pipe,,,,,,Table of pipes,,
+,id,serial,,,-,Unique identifier,,
+,calculation_type,integer,*,1,-,"Calculation type for pipe. When start en end connection nodes are manholes only used for calculation points half-way pipe.
+ 0 = embedded
+ 1 = isolated
+ 2 = connected
+ 3 = broad crest
+ 4 = short crest",,
+,code,text,,,-,"Name field, no constraints",,
+,connection_node_end_id,integer,,,,"End node for pipe.
+ Must be present in v2_connection_nodes",,
+,connection_node_start_id,integer,,,,"Start node for pipe.
+ Must be present in v2_connection_nodes",,
+,cross_section_definition_id,integer,*,,-,ID of cross section definition in v2_cross_section_definition,,
+,display_name,text,,,-,"Name field, no constraints",,
+,dist_calc_points,double,,,m,Distance between calculation points on pipe.,,
+,friction_type,integer,*,,,"Friction type.
+ 1: Chezy
+ 2: Manning",,
+,friction_value,double,*,,"1:[m1/2/s], 2:[s/m1/3]",Friction or roughness value for profile; friction only accounted for in case of broad crested weir,,
+,invert_level_end_point,double,*,,m above datum (NL: NAP),"Invert level at culvert endpoint. 
+ Must be equal or above ajoining manhole or channel bottom/reference level.",,
+,invert_level_start_point,double,*,,m above datum (NL: NAP),"Invert level at culvert startpoint. 
+ Must be equal or above ajoining manhole or channel bottom/reference level.",,
+,material,integer,,,,"Material of pipe, used for internal bookkeeping only.
+ 0: concrete
+ 1: pvc
+ 2: gres
+ 3: cast iron
+ 4: brickwork
+ 5: HPE
+ 6: HDPE
+ 7: plate iron
+ 8: steel",,
+,original_length,double,,,m,For internal use only.,,Hoe gebruikt?
+,profile_num,integer,,,,For internal use only.,,
+,sewerage_type,integer,,,-,"Pipe type. 3Di requires the sewerage_type to be one of the following:
+ 0: gemengd - mixed
+ 1: rwa - rain water
+ 2: dwa - dry wheather flow
+ 3: transport
+ 4: overstort - spillway
+ 5: zinker
+ 6: berging - storage
+ 7: bergbezinkbak - storage tank
+Some organisations use additional codes. This is not allowed in 3Di.",,
+,zoom_category,integer,,,,Visibility in live site. 0 is lowest for smallest level (i.e. ditch) and 5 for highest (rivers),,
+v2_pumpstation,,,,,,List of pumpstations,,
+,id,serial,*,,,Unique identifier,,
+,capacity,double,*,,L/s,Pump capacity.,,
+,zoom_category,integer,,,,For internal book keeping.,,
+,code,text,*,,,"Name field, no constraints",,
+,connection_node_end_id,integer,,,,"End node for pumpstation. 
+ Must be present in v2_connection_nodes.
+ Can be left blank in which case pump functions as boundary.",,
+,connection_node_start_id,integer,,,,"Start node for pumpstation. 
+ Must be present in v2_connection_nodes.
+ Can be left blank in which case pump functions as boundary.",,
+,classification,integer,,,,,,
+,display_name,text,*,,,"Name field, no constraints",,
+,lower_stop_level,double,*,,m above datum (NL: NAP),"Level at pump start or end node at which pump stops pumping.
+ Must be below start level.",,
+,sewerage,boolean,*,,,For internal book keeping.,,
+,start_level,double,*,,m above datum (NL: NAP),"Level at pump start or end node from from which it starts pumping.
+ Must be equal or above ajoining manhole or channel bottom/reference level.",,
+,type,integer,*,,,"Type that determines pump function.
+1 Pump behaviour is based on water levels on the suction-side of the pump
+2 Pump behaviour is based on water levels on the delivery-side of the pump  ",,
+,sc,double,,,m above datum (NL: NAP),"Level at pump start or end node at which pump stops pumping.
+ Must be above start level.",,
+,zoom_category,integer,*,,,Visibility in live site. 0 is lowest for smallest level (i.e. ditch) and 5 for highest (rivers),,
+v2_simple_infiltration,,,,,,do not use in combination with v2_groundwater,,
+,id,serial,*,,,Unique identifier,,
+,display_name,text,*,,,"Name field, no constraints",,
+,infiltration_rate,double,*,0,mm/day,Global infiltration rate.,,
+,infiltration_rate_file,text,,raster/yourfile.tif,mm/day,"Relative path to infiltration file (.tif).
+ Infiltration uses the sum of pixel values per calculation cell in case of rain and sum of wet pixels in case of standing water.
+Must be NULL (and not """") when not using infiltration otherwise 3di expects infiltration.",,
+,infiltration_surface_option,integer,,0,,"Option that sets how the infiltration works in calculation cells.
+ 0: rain (whole surface when raining, only wet pixels when dry)
+ 1: whole surface (always whole surface)
+ 2: only wet surface (always only wet pixels)
+in case not defined then option 0 is used",,
+,max_infiltration_capacity_file,text,,raster/yourfile.tif,m,"Relative path to max infiltration file (.tif).
+ Maximum infiltration uses the sum of pixel values per calculation cell.",,
+v2_surface,,,,,,,,
+,id,serial,*,,,Unique identifier,,
+,area,double,*,,m2,Cannot be left blank. A value of 0 is allowed.,,
+,code,text,*,,,"Name field, no constraints",,
+,display_name,text,*,,,"Name field, no constraints",,
+,dry_weather_flow,double,,,L/day per inhabitant,Dry weather flow per inhabitant.,,
+,function,text,,,,For your own administration.,,
+,nr_of_inhabitants,double,,,-,Number of inhabitant used for dry wheather flow.,,
+,surface_parameters_id,integer,*,,,Reference to v2_surface_parameters. The id filled in here must be present in this (v2_surface_parameters) table,,
+,zoom_category,integer,*,,,Visibility in live site. 0 is lowest for smallest level (i.e. ditch) and 5 for highest (rivers),,
+v2_surface_map,,,,,,,,
+,id,serial,*,,-,Unique identifier,,
+,connection_node_id,integer,*,,-,ID of connection_node. Connecting the surface area from v2_surface to an connection_node,,
+,percentage,double,*,,%,percentage of area to the connection_node,,
+,surface_id,integer,*,,-,ID of surface feature,,
+,surface_type,text,*,,-,choice to use the 'v2_surface' or 'v2_impervious_surface',,
+v2_surface_parameters,For more information on these parameters see: Leidraad riolering C2100 page: 51 ,,,,,,,(L:\Intern\Digibieb\Leidraad Riolering)
+,id,serial,*,,-,Unique identifier,,
+,infiltration,boolean,*,,,0 or 1,,
+,infiltration_decay_constant,double,*,,/h,time factor decay infiltration capacity of the surface,,
+,infiltration_recovery_constant,double,*,,/h,time factor recovery infiltration capacity of the surface,,
+,max_infiltration_capacity,double,*,,mm/h,Maximum infiltration capacity of the surface,,
+,min_infiltration_capacity,double,*,,mm/h,Minimum infiltration capacity of the surface,,
+,outflow_delay,double,*,,/min,delay of outflow,,
+,surface_layer_thickness,double,*,,mm,mm storage on the surface,,
+v2_weir,,,,,,List of weirs,,
+,id,serial,*,,-,Unique identifier,,
+,code,text,*,,-,"Name field, no constraints",,
+,connection_node_end_id,integer,,,,"End node for weir.
+ Must be present in v2_connection_nodes and on channel end node",,
+,connection_node_start_id,integer,,,,"Start node for weir.
+ Must be present in v2_connection_nodes and on channel start node",,
+,crest_level,double,*,,m above datum (NL: NAP),"Crest level. 
+ Must be equal or above ajoining manhole or channel bottom/reference level.",,
+,crest_type,integer,*,,-,,,
+,cross_section_definition_id,integer,*,,-,"Type of weir formulation.
+ 3: broad crested
+ 4: short crested",,
+,discharge_coefficient_negative,double,*,,-,Discharge coefficient for negative flow (from end to start node). Can be set to 0 when closed.,,
+,discharge_coefficient_positive,double,*,,-,Discharge coefficient for positive flow (from start to end node). Can be set to 0 when closed.,,
+,display_name,text,*,,-,"Name field, no constraints",,
+,external,boolean,,,,For internal book keeping,,
+,friction_type,integer,*,,,"Friction type.
+ 1: Chezy
+ 2: Manning",,
+,friction_value,double,*,,"1:[m1/2/s], 2:[s/m1/3]",Friction or roughness value for profile; friction only accounted for in case of broad crested weir,,
+,sewerage,boolean,,,,"For internal book keeping, 0 (false) or 1 (true)",,
+,zoom category,integer,,,,Visibility in live site. 0 is lowest for smallest level (i.e. ditch) and 5 for highest (rivers),,
+v2 control tables are filled automatically using the control structures tool in the QGIS Plugin toolbox,,,,,,,,
+v2_control,,,,,,,,
+,id,integer,*,,,Unique identifier,,
+,control_type,text,*,,,"Type of control, options are amongst others:
+table
+memory",,
+,control_id,integer,*,,,id in the v2_control_table (in case of table control) or v2_control_memory (in case of memory control),,
+,control_group_id,integer,*,,,id of the v2_control_group this control is part of,,
+,measure_group_id,integer,*,,,id of the v2_measure_group,,
+,start,,,,s,Start time of the control in seconds since beginning of the simulation. Can be used to link multiple control tables to one control structure.,,
+,end,,,,s,End time of the control in seconds since beginning of the simulation,,
+,measure_frequency,,,,,NOT YET IMPLEMENTED,,
+v2_control_group,,,,,,control_group referred to in v2_global settings,,
+,id,integer,*,,,Unique identifier,,
+,name,text,*,,,Name,,
+,description,text,*,,,Description,,
+v2_control_measure_group,,,,,,Table defining the different control measure groups,,
+,id,integer,*,,,Unique identifier,,
+v2_control_measure_map,,,,,,Table defining the measure stations within a measure group,,
+,id,integer,*,,,Unique identifier,,
+,measure_group_id,integer,*,,,ID of the v2_measure_group this measure station is part of.,,
+,object_type,text,*,,,"Type of object to measure at, for example:
+'v2_connection_nodes'",,
+,object_id,integer,*,,,id of the object (of type defined in object_type),,
+,weight,double,*,,,"weight of measuring station in group, use 1.0 for groups with single measuring station. Combined weight should be 1.0.",,
+v2_control_table,,,,,,Table defining the table control,,
+,id,integer,*,,,Unique identifier,,
+,action_table,text,*,,,"Semicolumn seperated table with action values, use # for newline. For Example: -1.7;-1.4#-1.6;-1.3#-1.5;-1.2
+When controlling set_discharge_coefficients you need to supply 2 values. One for the positive discharge coefficient and one for the negative discharge coefficient. Example: -1.7;0 0#-1.6;0.5 0.8#-1.5;1 1",,
+,action_type,text,*,,,Type of action; For instance: 'set_crest_level' or 'set_discharge_coefficients',,
+,measure_variable,text,*,,,Measure variable in action table. For instance: 'waterlevel',,
+,measure_operator,text,*,,,Operator for direction the action table is read. '<' or '>',,
+,target_type,text,*,,,Structure type the control is applied to. For instance: 'v2_weir' or 'v2_culvert' or 'v2_orifice',,
+,target_id,integer,*,,,Id of structure the control is applied to.,,
+v2_control_memory,,,,,,Table defining the memory control,,
+,id,integer,*,,,Unique identifier,,
+,action_value,double,*,,,Value that the measure_variable is set to when memory control becomes active,,
+,action_type,text,*,,,Type of action; For instance: set_pump_capacity,,
+,is_active,integer,*,,,"0: control is inactive when initializing the model
+1: control is active when initializing the model",,
+,is_inverse,integer,*,,,"0: normal functioning of the control
+1: inverting the lower and upper threshold",,
+,lower_threshold,double,*,,,Lower threshold of measure_variable. Control becomes inactive when value drops below this value (unless is_inverse = 1),,
+,measure_variable,text,*,,,Measure variable in action table. For instance: waterlevel,,
+,target_id,integer,*,,,id of structure the control is applied to,,
+,target_type,text,*,,,Structure type the control is applied to. For instance: v2_pumpstation,,
+,upper_threshold,double,*,,,Upper threshold of measure_variable. Control becomes active when value rises above this value (unless is_inverse = 1),,
