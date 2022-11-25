@@ -13,6 +13,7 @@ Usage - 3Di schematisation edits
 
 
 Importing the module::
+
   >>> import threedi_edits as te
   
   
