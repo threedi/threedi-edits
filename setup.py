@@ -21,6 +21,7 @@ setup(
     version=__version__,
     description="An experimental pythonic 3Di schematisation api. Using this api, we can access, alter en write a 3Di database within python. Within the package gis tools are provided as well. ",
     long_description=long_description,
+    long_description_content_type='text/x-rst',
     # Get strings from http://www.python.org/pypi?%3Aaction=list_classifiers
     classifiers=["Programming Language :: Python", "Framework :: Django"],
     keywords=["3Di", "GDAL", "api"],
