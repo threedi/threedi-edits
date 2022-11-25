@@ -87,4 +87,5 @@ Editing and writing rasters::
   
   
 For more examples:
-	te.get_examples("example_folder")
+
+  >>> te.get_examples("example_folder")
