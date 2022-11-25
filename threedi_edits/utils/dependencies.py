@@ -6,7 +6,6 @@ Created on Tue May 31 10:50:44 2022
 """
 
 # First party imports
-import sys
 import importlib
 import logging
 from collections import namedtuple

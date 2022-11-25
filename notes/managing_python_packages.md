@@ -19,6 +19,7 @@ This creates a ```dist/``` directory (if it doesn't exist yet) and a compressed 
 3. Optionally you can create a wheel distribution (i.e. platform specific distribution, some parts are pre-built, requires `pip install wheel`)
 
 ```python setup.py bdist_wheel```
+```python setup.py bdist_wheel --python-tag py310 --plat-name win-amd64'''
 
 This creates a wheel in the ```dist/``` directory.
 
@@ -32,7 +33,7 @@ This uploads the newest build that isn't on testPyPi. You can then test the pack
 with the command listed for the project, something like:
 
 ```pip install -i https://test.pypi.org/simple/ [package_name==version]```
-'''pip install --extra-index-url https://test.pypi.org/simple/ threedi_edits==0.13'''
+'''pip install --extra-index-url https://test.pypi.org/simple/ threedi_edits'''
 
 
 This will not install dependencies specified in ```setup.py```, if you want this behaviour, add the following option to 

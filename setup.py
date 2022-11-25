@@ -23,9 +23,9 @@ setup(
     long_description=long_description,
     # Get strings from http://www.python.org/pypi?%3Aaction=list_classifiers
     classifiers=["Programming Language :: Python", "Framework :: Django"],
-    keywords=[],
+    keywords=["3Di", "GDAL", "api"],
     author="Chris Kerklaan",
-    author_email="chris.kerklaan@nelen-schuurmans.nl",
+    author_email="chris-kerklaan@live.nl",
     url="https://github.com/threedi-edits",
     license="LGPL",
     packages=find_packages(),
