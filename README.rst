@@ -4,7 +4,7 @@ threedi-edits
 Introduction
 
 An experimental pythonic 3Di schematisation api. Using this api, we can access, alter en write a 3Di database within python. Within the package gis tools are provided as well.  
-Currently version '0209' of the schematisation is supported. If your 3Di database is not up to date, please use: 'threedi_modelchecker (0.30) --sqlite "path/to/sqlite.sqlite" migrate' to migrate your database to version '0209'.
+Currently version 0209 of the schematisation is supported. If your 3Di database is not up to date, please use: threedi_modelchecker (0.30) --sqlite path/to/sqlite.sqlite migrate to migrate your database to version 0209.
 
 This package is the continuation of threedi-raster-edits (0.27)
 
