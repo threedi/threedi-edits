@@ -334,7 +334,7 @@ class ThreediEdits(ThreediVectorGroup):
         self.__dict__["rasters"] = value
 
     def supported(self, version):
-        if not version in SUPPORTED_THREEDI_VERSIONS:
+        if version not in SUPPORTED_THREEDI_VERSIONS:
             raise NotImplementedError(
                 f"Version {version} not implemented, please migrate."
             )

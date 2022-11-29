@@ -247,7 +247,7 @@ class VectorBase:
     def fid_column(self):
         column = self.layer.GetFIDColumn()
         if column == "":
-            return "id"
+            return "FID"
         return self.layer.GetFIDColumn()
 
     @property
@@ -590,7 +590,6 @@ class VectorBase:
         Maybe we should look a settings:
             https://courses.spatialthoughts.com/gdal-tools.html#tips-for-improving-performance
         """
-
         if len(fids) == 0:
             return self._copy(shell=True)[1]
 
@@ -602,9 +601,10 @@ class VectorBase:
             return self._copy()[1]
 
         max_size = 4000
+        fid = self.fid_column
         sets = []
         for i in range(0, len(fids), max_size):
-            self.layer.SetAttributeFilter(f"FID IN {fids[i:i + max_size]}")
+            self.layer.SetAttributeFilter(f"{fid} IN {fids[i:i + max_size]}")
             sets.append(self._copy()[0])
         output = merge(sets, self.name)
 

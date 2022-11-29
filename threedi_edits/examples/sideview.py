@@ -14,12 +14,12 @@ For connection node the results ore sampled on a waterlevel, then the watersampl
 
 
 """
+import threedi_edits as te
+import numpy as np
+import matplotlib.pyplot as plt
 
 from threedigrid.admin.gridresultadmin import GridH5ResultAdmin
 from threedigrid.admin.gridadmin import GridH5Admin
-import threedi_edits as tre
-import numpy as np
-import matplotlib.pyplot as plt
 
 # globals
 MIN_LEVEE_HOOGTE = 6.31
@@ -45,11 +45,11 @@ class Grid:
         return self._nodes
 
     def set_nodes(self):
-        self._nodes = tre.Vector.from_scratch("nodes", 1, 28992)
+        self._nodes = te.Vector.from_scratch("nodes", 1, 28992)
         coordinates = np.vstack(self.gr.nodes.coordinates.T)
         ids = self.gr.nodes.id
         for id, coordinate in zip(ids, coordinates):
-            self._nodes.add(geometry=tre.Point.from_point(coordinate), fid=id)
+            self._nodes.add(geometry=te.Point.from_point(coordinate), fid=id)
 
     def level(self, grid_id=[], model_id=[], start_time=0, end_time=None):
         """retrieves the waterlevel for different either model ids or grid ids
@@ -110,12 +110,14 @@ def create(
     results = Grid(result_folder, start_time=start_time, end_time=start_time + 350)
 
     # First select connection nodes with shape
-    shape = tre.Vector(selection_shape).reproject(4326)[0].geometry
+    selection = te.Vector(selection_shape)
+    selection_reprojected = selection.reproject(4326)
+    shape = selection_reprojected.first().geometry
 
     # Open schematisation
-    schema = tre.ThreediEdits(schematisation_path)
+    schema = te.ThreediEdits(schematisation_path)
 
-    node_fids = schema.nodes.spatial_filter(shape, "Within", return_fid=True)
+    node_fids = schema.nodes.spatial_subset(shape.buffer(0))
 
     output = {"nodes": node_fids, "waterstand": [], "oeverhoogte": []}
     levels = results.level(model_id=node_fids)
@@ -124,7 +126,7 @@ def create(
         output["waterstand"].append(level[0])
 
     # now we find the bank levels
-    channel = schema.channels.spatial_filter(shape, "Within", return_vector=True)
+    channel = schema.channels.spatial_subset(shape, "within")
 
     # reproject
     channel = channel.copy().reproject(28992)
@@ -255,15 +257,17 @@ if __name__ == "__main__":
     schematisation_path = r"C:\Users\chris.kerklaan\Documents\threedi_models\NBW Overijssels Kanaal - winter GHG - NVO\work in progress\schematisation/NBW Overijssels Kanaal - winter GHG - NVO.sqlite"
     result_folder = r"C:\Users\chris.kerklaan\Documents\threedi_models\NBW Overijssels Kanaal - winter GHG - NVO\work in progress\results\sim_86859_T100_winter_GHG_-_NVO_(n_=_0.3)"
     selection_shape = (
-        r"C:/Users/chris.kerklaan/Documents/Projecten/overijssels_kanaal/data/ovk.shp"
+        r"C:/Users/chris.kerklaan/Documents/Projecten/overijssels_kanaal/ovk.shp"
     )
     output_name = r"C:\Users\chris.kerklaan\Documents\Projecten\overijssels_kanaal\processing/sideview_NVO_manning_03.png"
+    start_time = 120 * 3600
+    start_node_id = 74507
     create(
         "NVO (Manning n=0.3)",
         result_folder,
         schematisation_path,
         selection_shape,
         output_name,
-        start_time=120 * 3600,
-        start_node_id=74507,
+        start_time=start_time,
+        start_node_id=start_node_id,
     )

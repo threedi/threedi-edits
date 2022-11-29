@@ -1,11 +1,17 @@
 from setuptools import setup, find_packages
 
 
-__version__ = "1.1"
+__version__ = "1.2"
 
 long_description = "\n\n".join([open("README.rst").read(), open("CHANGES.rst").read()])
 
-install_requires = ["scipy", "cached_property", "shapely==2.0a1", "threedigrid_builder"]
+install_requires = [
+    "scipy",
+    "cached_property",
+    "shapely==2.0a1",
+    "threedigrid_builder",
+    "threedi_modelchecker",
+]
 
 tests_require = [
     "pytest",
@@ -21,7 +27,7 @@ setup(
     version=__version__,
     description="An experimental pythonic 3Di schematisation api. Using this api, we can access, alter en write a 3Di database within python. Within the package gis tools are provided as well. ",
     long_description=long_description,
-    long_description_content_type='text/x-rst',
+    long_description_content_type="text/x-rst",
     # Get strings from http://www.python.org/pypi?%3Aaction=list_classifiers
     classifiers=["Programming Language :: Python", "Framework :: Django"],
     keywords=["3Di", "GDAL", "api"],
