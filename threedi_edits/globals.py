@@ -6,7 +6,7 @@ Created on Thu Nov 24 14:20:09 2022
 """
 
 # versioning
-__version__ = "1.1"
+__version__ = "1.2.1"
 
 # Globals
 SUPPORTED_THREEDI_VERSIONS = ["0209", "0210"]

@@ -117,8 +117,8 @@ def create(
     # Open schematisation
     schema = te.ThreediEdits(schematisation_path)
 
-    node_fids = schema.nodes.spatial_subset(shape.buffer(0))
-
+    node_fids_vector = schema.nodes.spatial_subset(shape.buffer(0))
+    node_fids = node_fids_vector.table["fid"]
     output = {"nodes": node_fids, "waterstand": [], "oeverhoogte": []}
     levels = results.level(model_id=node_fids)
 
