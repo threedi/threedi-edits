@@ -136,14 +136,14 @@ def create(
         buffered_node = schema.nodes[node_id].geometry.buffer(0.00001)
         buffered_node = buffered_node.reproject(28992)
         clipped_channel = channel.clip(geometry=buffered_node).dissolve(quiet=True)
-        line = clipped_channel[0]
+        line = clipped_channel.first()
 
         if line.geometry.IsEmpty():
             output["oeverhoogte"].append([None, None])
             continue
 
         perpendicular_line = line.geometry.perpendicular_lines(0.5, 20)[0]
-        levee = levees.spatial_filter(perpendicular_line, return_vector=True)
+        levee = levees.spatial_subset(perpendicular_line)
         if levee.count > 0:
             if levee.count == 2:
                 output["oeverhoogte"].append(
@@ -152,7 +152,6 @@ def create(
                         levee[levee.fids[1]]["crest_level"],
                     ]
                 )
-                print(levee.fids, node_id)
             else:
                 output["oeverhoogte"].append(
                     [levee[levee.fids[0]]["crest_level"], None]
@@ -259,7 +258,7 @@ if __name__ == "__main__":
     selection_shape = (
         r"C:/Users/chris.kerklaan/Documents/Projecten/overijssels_kanaal/ovk.shp"
     )
-    output_name = r"C:\Users\chris.kerklaan\Documents\Projecten\overijssels_kanaal\processing/sideview_NVO_manning_03.png"
+    output_name = r"C:\Users\chris.kerklaan\Documents\Projecten\overijssels_kanaal\sideview_NVO_manning_0321.png"
     start_time = 120 * 3600
     start_node_id = 74507
     create(

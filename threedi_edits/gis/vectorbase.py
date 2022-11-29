@@ -868,10 +868,9 @@ def _VSIFPrintfL(f, s):
 
 
 def _Esc(x):
-    if gdal.__version__ == "3.5.2":
+    if isinstance(x, (bytes, bytearray)):
         return gdal.EscapeString(x, gdal.CPLES_XML).decode("UTF-8")
-    else:
-        return gdal.EscapeString(x, gdal.CPLES_XML)
+    return gdal.EscapeString(x, gdal.CPLES_XML)
 
 
 class XMLWriter:
